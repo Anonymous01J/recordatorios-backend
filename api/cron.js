@@ -47,11 +47,14 @@ module.exports = async function handler(req, res) {
             body: JSON.stringify({
                 app_id: ONE_SIGNAL_APP_ID,
                 included_segments: ['All'],
-                headings: { es: notif.titulo, en: notif.titulo },
-                contents: { es: notif.mensaje, en: notif.mensaje },
+                headings: { es: notif.titulo },
+                contents: { es: notif.mensaje },
+                // CLAVE: Enviamos el ID para que el script sepa qué completar
+                data: { tipo: tipo }, 
                 priority: 10,
                 ttl: 3600,
-                web_buttons: notif.botones
+                web_buttons: notif.botones,
+                chrome_web_icon: "https://recordatorios-app.netlify.app/favicon.ico"
             })
         });
 
