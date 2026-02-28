@@ -1,9 +1,40 @@
-// api/cron.js — Notificación del suplemento (12pm, 3pm, 6pm, 9pm VET)
 const fetch = require('node-fetch');
 
+const ONE_SIGNAL_APP_ID = process.env.ONESIGNAL_APP_ID;
+const ONE_SIGNAL_REST_KEY = process.env.ONESIGNAL_REST_KEY;
+
+const MENSAJES = {
+    suplemento: {
+        titulo: "💊 ¿Ya te tomaste tu suplemento?",
+        mensaje: "Si no lo has hecho, hazlo. Que no te hice esto para que lo ignores 🙃",
+        botones: [
+            { id: 'done', text: '✅ ¡Hecho!' },
+            { id: 'snooze', text: '⏰ En 10 min' }
+        ]
+    },
+    parche: {
+        titulo: "🏴‍☠️ ¿Te pusiste tu parche hoy?",
+        mensaje: "Si no lo has hecho, es tu momento de hacer Cosplay de Garfio 🪝",
+        botones: [
+            { id: 'done', text: '✅ ¡Hecho!' },
+            { id: 'pirata', text: '🏴‍☠️ ¡Soy Garfio!' }
+        ]
+    }
+};
+
 module.exports = async function handler(req, res) {
-    if (req.headers['authorization'] !== `Bearer ${process.env.CRON_SECRET}`) {
-        return res.status(401).json({ error: 'Unauthorized' });
+    const authHeader = req.headers['authorization'];
+    const cronSecret = process.env.CRON_SECRET;
+
+    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+        return res.status(401).json({ error: 'No autorizado' });
+    }
+
+    const tipo = req.query.tipo || 'suplemento';
+    const notif = MENSAJES[tipo];
+
+    if (!notif) {
+        return res.status(400).json({ error: `Tipo desconocido: ${tipo}` });
     }
 
     try {
@@ -11,29 +42,31 @@ module.exports = async function handler(req, res) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Basic ${process.env.ONESIGNAL_REST_API_KEY}`
+                'Authorization': `Key ${ONE_SIGNAL_REST_KEY}`
             },
             body: JSON.stringify({
-                app_id: process.env.ONESIGNAL_APP_ID,
+                app_id: ONE_SIGNAL_APP_ID,
                 included_segments: ['All'],
-                headings: { en: '💊 ¿Ya te tomaste tu suplemento?' },
-                contents: { en: 'Si no lo has hecho, hazlo. Que no te hice esto para que lo ignores 🙃' },
+                headings: { es: notif.titulo, en: notif.titulo },
+                contents: { es: notif.mensaje, en: notif.mensaje },
                 priority: 10,
                 ttl: 3600,
-                web_buttons: [
-                    { id: 'done', text: '✅ ¡Hecho!' },
-                    { id: 'snooze', text: '⏰ En 10 min' }
-                ]
+                web_buttons: notif.botones
             })
         });
 
         const data = await response.json();
-        if (data.errors) return res.status(500).json({ error: data.errors });
 
-        console.log('Suplemento enviado:', data.id);
-        return res.status(200).json({ success: true, id: data.id });
+        if (data.errors) {
+            console.error('OneSignal error:', data.errors);
+            return res.status(500).json({ error: data.errors });
+        }
+
+        console.log(`Notificacion [${tipo}] enviada: ${data.id} recipients: ${data.recipients}`);
+        return res.status(200).json({ ok: true, tipo, id: data.id, recipients: data.recipients });
 
     } catch (error) {
+        console.error('Error:', error.message);
         return res.status(500).json({ error: error.message });
     }
 };
