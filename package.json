@@ -1,0 +1,12 @@
+{
+  "name": "recordatorios-backend",
+  "version": "1.0.0",
+  "description": "Backend para enviar notificaciones push via OneSignal",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "node-fetch": "^2.7.0"
+  }
+}
