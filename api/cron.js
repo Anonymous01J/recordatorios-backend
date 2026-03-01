@@ -47,9 +47,15 @@ module.exports = async function handler(req, res) {
             body: JSON.stringify({
                 app_id: ONE_SIGNAL_APP_ID,
                 included_segments: ['All'],
-                headings: { es: notif.titulo },
-                contents: { es: notif.mensaje },
-                // CLAVE: Enviamos el ID para que el script sepa qué completar
+                // SOLUCIÓN AL ERROR: Incluimos 'en' (inglés) además de 'es'
+                headings: { 
+                    en: notif.titulo, 
+                    es: notif.titulo 
+                },
+                contents: { 
+                    en: notif.mensaje, 
+                    es: notif.mensaje 
+                },
                 data: { tipo: tipo }, 
                 priority: 10,
                 ttl: 3600,
@@ -65,7 +71,6 @@ module.exports = async function handler(req, res) {
             return res.status(500).json({ error: data.errors });
         }
 
-        console.log(`Notificacion [${tipo}] enviada: ${data.id} recipients: ${data.recipients}`);
         return res.status(200).json({ ok: true, tipo, id: data.id, recipients: data.recipients });
 
     } catch (error) {
