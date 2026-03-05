@@ -8,16 +8,16 @@ const MENSAJES = {
         titulo: "💊 ¿Ya te tomaste tu suplemento?",
         mensaje: "Si no lo has hecho, hazlo. Que no te hice esto para que lo ignores 🙃",
         botones: [
-            { id: 'done', text: '✅ ¡Hecho!' },
-            { id: 'snooze', text: '⏰ En 10 min' }
+            { id: 'done',   text: '✅ ¡Hecho!' },
+            { id: 'snooze', text: '⏰ Recordarme luego' }
         ]
     },
     parche: {
         titulo: "🏴‍☠️ ¿Te pusiste tu parche hoy?",
         mensaje: "Si no lo has hecho, es tu momento de hacer Cosplay de Garfio 🪝",
         botones: [
-            { id: 'done', text: '✅ ¡Hecho!' },
-            { id: 'pirata', text: '🏴‍☠️ ¡Soy Garfio!' }
+            { id: 'done',   text: '✅ ¡Hecho!' },
+            { id: 'snooze', text: '⏰ Recordarme en 15 min' }
         ]
     }
 };
@@ -31,11 +31,7 @@ module.exports = async function handler(req, res) {
     }
 
     const tipo = req.query.tipo || 'suplemento';
-    const notif = MENSAJES[tipo];
-
-    if (!notif) {
-        return res.status(400).json({ error: `Tipo desconocido: ${tipo}` });
-    }
+    const notif = MENSAJES[tipo] || MENSAJES['suplemento']; // fallback a suplemento si tipo desconocido
 
     try {
         const response = await fetch('https://onesignal.com/api/v1/notifications', {
@@ -47,19 +43,21 @@ module.exports = async function handler(req, res) {
             body: JSON.stringify({
                 app_id: ONE_SIGNAL_APP_ID,
                 included_segments: ['All'],
-                // SOLUCIÓN AL ERROR: Incluimos 'en' (inglés) además de 'es'
-                headings: { 
-                    en: notif.titulo, 
-                    es: notif.titulo 
+                headings: {
+                    en: notif.titulo,
+                    es: notif.titulo
                 },
-                contents: { 
-                    en: notif.mensaje, 
-                    es: notif.mensaje 
+                contents: {
+                    en: notif.mensaje,
+                    es: notif.mensaje
                 },
-                data: { tipo: tipo }, 
+                data: { tipo: tipo },
                 priority: 10,
                 ttl: 3600,
+                // web_buttons para navegadores de escritorio
                 web_buttons: notif.botones,
+                // action_buttons para móvil (Android/iOS)
+                action_buttons: notif.botones,
                 chrome_web_icon: "https://recordatorios-app.netlify.app/favicon.ico"
             })
         });

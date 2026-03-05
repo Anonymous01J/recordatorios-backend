@@ -1,9 +1,24 @@
 {
   "crons": [
-    { "path": "/api/cron?tipo=suplemento", "schedule": "0 16 * * *" },
-    { "path": "/api/cron?tipo=suplemento", "schedule": "0 19 * * *" },
-    { "path": "/api/cron?tipo=suplemento", "schedule": "0 22 * * *" },
-    { "path": "/api/cron?tipo=suplemento", "schedule": "0 1 * * *"  },
-    { "path": "/api/cron?tipo=parche",     "schedule": "0 1 * * *"  }
+    {
+      "path": "/api/cron?tipo=suplemento",
+      "schedule": "0 16 * * *"
+    },
+    {
+      "path": "/api/cron?tipo=suplemento",
+      "schedule": "0 19 * * *"
+    },
+    {
+      "path": "/api/cron?tipo=suplemento",
+      "schedule": "0 22 * * *"
+    },
+    {
+      "path": "/api/cron?tipo=suplemento",
+      "schedule": "0 1 * * *"
+    },
+    {
+      "path": "/api/cron?tipo=parche",
+      "schedule": "0 1 * * *"
+    }
   ]
 }
