@@ -42,7 +42,8 @@ module.exports = async function handler(req, res) {
             },
             body: JSON.stringify({
                 app_id: ONE_SIGNAL_APP_ID,
-                included_segments: ['All'],
+                // Filtrar solo usuarios con el tag del tipo activo (1 = activo, 0 = desactivado)
+                filters: [{ field: 'tag', key: tipo, relation: '=', value: '1' }],
                 headings: {
                     en: notif.titulo,
                     es: notif.titulo
