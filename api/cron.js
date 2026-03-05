@@ -52,7 +52,7 @@ module.exports = async function handler(req, res) {
                     en: notif.mensaje,
                     es: notif.mensaje
                 },
-                data: { tipo: tipo },
+                data: { tipo: tipo, titulo: notif.titulo, mensaje: notif.mensaje },
                 priority: 10,
                 ttl: 3600,
                 // web_buttons para navegadores de escritorio
