@@ -42,8 +42,12 @@ module.exports = async function handler(req, res) {
             },
             body: JSON.stringify({
                 app_id: ONE_SIGNAL_APP_ID,
-                // Filtrar solo usuarios con el tag del tipo activo (1 = activo, 0 = desactivado)
-                filters: [{ field: 'tag', key: tipo, relation: '=', value: '1' }],
+                // Enviar solo a usuarios con el recordatorio activo Y sin No Molestar
+                filters: [
+                    { field: 'tag', key: tipo,  relation: '=', value: '1' },
+                    { operator: 'AND' },
+                    { field: 'tag', key: 'dnd', relation: '!=', value: '1' }
+                ],
                 headings: {
                     en: notif.titulo,
                     es: notif.titulo
