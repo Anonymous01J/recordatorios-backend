@@ -63,7 +63,7 @@ module.exports = async function handler(req, res) {
                 web_buttons: notif.botones,
                 // action_buttons para móvil (Android/iOS)
                 action_buttons: notif.botones,
-                chrome_web_icon: "https://recordatorios-app.netlify.app/favicon.ico"
+                chrome_web_icon: "https://recordatorios-app-web.joseguillermojose01.workers.dev/favicon.ico"
             })
         });
 
