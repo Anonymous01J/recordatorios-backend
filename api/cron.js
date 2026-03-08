@@ -13,8 +13,8 @@ const MENSAJES = {
         ]
     },
     parche: {
-        titulo: "🏴‍☠️ ¿Te pusiste tu parche hoy?",
-        mensaje: "Si no lo has hecho, es tu momento de hacer Cosplay de Garfio 🪝",
+        titulo: "🏴‍☠️ Parche: ¿ya te lo pusiste hoy?",
+        mensaje: "Si no lo has hecho, es tu momento de hacer Cosplay de Garfio ☠️",
         botones: [
             { id: 'done',   text: '✅ ¡Hecho!' },
             { id: 'snooze', text: '⏰ Recordarme en 15 min' }
@@ -31,7 +31,7 @@ module.exports = async function handler(req, res) {
     }
 
     const tipo = req.query.tipo || 'suplemento';
-    const notif = MENSAJES[tipo] || MENSAJES['suplemento']; // fallback a suplemento si tipo desconocido
+    const notif = MENSAJES[tipo] || MENSAJES['suplemento'];
 
     try {
         const response = await fetch('https://onesignal.com/api/v1/notifications', {
@@ -42,7 +42,6 @@ module.exports = async function handler(req, res) {
             },
             body: JSON.stringify({
                 app_id: ONE_SIGNAL_APP_ID,
-                // Enviar solo a usuarios con el recordatorio activo Y sin No Molestar
                 filters: [
                     { field: 'tag', key: tipo,  relation: '=', value: '1' },
                     { operator: 'AND' },
@@ -59,9 +58,7 @@ module.exports = async function handler(req, res) {
                 data: { tipo: tipo, titulo: notif.titulo, mensaje: notif.mensaje },
                 priority: 10,
                 ttl: 3600,
-                // web_buttons para navegadores de escritorio
                 web_buttons: notif.botones,
-                // action_buttons para móvil (Android/iOS)
                 action_buttons: notif.botones,
                 chrome_web_icon: "https://recordatorios-app-web.joseguillermojose01.workers.dev/favicon.ico"
             })
